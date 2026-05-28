@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>資料結構測驗 - 作答中</title>
+    <style>
+        /* 與封面一致的明亮科技網格背景 */
+        body { 
+            font-family: "Microsoft JhengHei", "Segoe UI", sans-serif; 
+            background-color: #f8fafc; 
+            background-image: 
+                linear-gradient(rgba(14, 165, 233, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(14, 165, 233, 0.08) 1px, transparent 1px);
+            background-size: 30px 30px; 
+            display: flex; 
+            justify-content: center; 
+            padding-top: 60px; 
+            padding-bottom: 60px;
+            margin: 0;
+            min-height: 100vh;
+            color: #334155;
+            box-sizing: border-box;
+        }
+
+        /* 題目卡片：明亮玻璃質感 */
+        .container { 
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(10px); 
+            padding: 40px; 
+            border-radius: 12px; 
+            border: 1px solid rgba(14, 165, 233, 0.2); 
+            border-top: 5px solid #0ea5e9; 
+            box-shadow: 0 10px 40px rgba(14, 165, 233, 0.1); 
+            width: 100%; 
+            max-width: 650px; 
+            position: relative;
+        }
+
+        /* 進度條文字 */
+        .progress { 
+            color: #0ea5e9; 
+            font-size: 0.95em; 
+            font-weight: bold;
+            margin-bottom: 15px; 
+            letter-spacing: 1px;
+        }
+
+        /* 題目文字 */
+        .question-text { 
+            font-size: 1.4em; 
+            color: #0f172a; 
+            margin-bottom: 25px; 
+            font-weight: 900; 
+            line-height: 1.5;
+        }
+
+        /* 選項樣式 */
+        .choice-item { 
+            margin-bottom: 15px; 
+            padding: 15px 20px; 
+            border-radius: 8px; 
+            border: 1px solid #e2e8f0; 
+            transition: all 0.3s ease; 
+            background: #ffffff;
+            font-size: 1.1em;
+        }
+        
+        /* 游標滑過選項的效果 */
+        .choice-item:hover:not(.correct):not(.wrong) { 
+            border-color: #0ea5e9; 
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.1); 
+            transform: translateX(5px);
+        }
+
+        /* 顯示答案時的顏色 */
+        .correct { background-color: #f0fdf4 !important; border-color: #86efac !important; color: #166534; font-weight: bold; }
+        .wrong { background-color: #fef2f2 !important; border-color: #fca5a5 !important; color: #991b1b; }
+        
+        .error-msg { color: #ef4444; font-weight: bold; margin-bottom: 15px; background: #fef2f2; padding: 10px; border-radius: 8px; border: 1px solid #fecaca; }
+
+        /* 按鈕樣式 */
+        .btn { 
+            border: none; 
+            padding: 15px 20px; 
+            border-radius: 8px; 
+            font-size: 1.1em; 
+            cursor: pointer; 
+            width: 100%; 
+            margin-top: 25px; 
+            font-weight: bold;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+        }
+        
+        .btn-submit { 
+            background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%); 
+            color: white; 
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4); }
+        
+        .btn-next { 
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%); 
+            color: white; 
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        .btn-next:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4); }
+
+        /* 點綴：藍色小方塊裝飾 */
+        .corner { position: absolute; width: 12px; height: 12px; background-color: #0ea5e9; opacity: 0.8; }
+        .top-left { top: 0; left: 0; border-bottom-right-radius: 8px; }
+        .top-right { top: 0; right: 0; border-bottom-left-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="corner top-left"></div>
+        <div class="corner top-right"></div>
+
+        <div class="progress">測驗進度： {{ q_index }} / {{ total_questions }}</div>
+        <div class="question-text">{{ question.text }}</div>
+
+        <form method="POST">
+            {% csrf_token %}
+            
+            {% for choice in question.choices.all %}
+                <div class="choice-item 
+                    {% if show_feedback %}
+                        {% if choice.is_correct %} correct {% elif choice.id == selected_choice_id %} wrong {% endif %}
+                    {% endif %}">
+                    <label style="display: block; cursor: pointer; padding-left: 5px;">
+                        <input type="radio" name="choice" value="{{ choice.id }}" 
+                               {% if selected_choice_id == choice.id %}checked{% endif %}
+                               {% if show_feedback %}disabled{% endif %}>
+                        {{ choice.text }}
+                        {% if show_feedback and choice.is_correct %} <span style="float: right;">(正確答案) ✅</span> {% endif %}
+                    </label>
+                </div>
+            {% endfor %}
+
+            {% if not show_feedback %}
+                {% if error_message %}<div class="error-msg">⚠️ {{ error_message }}</div>{% endif %}
+                <button type="submit" name="btn_submit" class="btn btn-submit">送出答案</button>
+            {% else %}
+                <input type="hidden" name="choice" value="{{ selected_choice_id }}">
+                <button type="submit" name="btn_next" class="btn btn-next">
+                    {% if q_index == total_questions %}查看總結結果{% else %}下一題 ➔{% endif %}
+                </button>
+            {% endif %}
+        </form>
+    </div>
+</body>
+</html>

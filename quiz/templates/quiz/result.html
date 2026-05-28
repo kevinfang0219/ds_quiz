@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>測驗結果 - 資料結構</title>
+    <style>
+        /* 基礎設定：明亮科技網格背景 */
+        body { 
+            font-family: "Microsoft JhengHei", "Segoe UI", sans-serif; 
+            background-color: #f8fafc; 
+            background-image: 
+                linear-gradient(rgba(14, 165, 233, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(14, 165, 233, 0.08) 1px, transparent 1px);
+            background-size: 30px 30px; 
+            color: #334155;
+            display: flex; 
+            justify-content: center; 
+            padding: 60px 20px;
+            margin: 0;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* 外部容器：限制最大寬度 */
+        .container { 
+            width: 100%; 
+            max-width: 750px; 
+        }
+
+        /* 頂部分數卡片：明亮玻璃質感與科技藍漸層 */
+        .summary-card { 
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(14, 165, 233, 0.2);
+            border-top: 5px solid #0ea5e9;
+            box-shadow: 0 10px 40px rgba(14, 165, 233, 0.1);
+            border-radius: 12px; 
+            padding: 40px; 
+            margin-bottom: 40px; 
+            text-align: center;
+            position: relative;
+        }
+
+        /* 點綴：藍色小方塊裝飾 */
+        .corner { position: absolute; width: 12px; height: 12px; background-color: #0ea5e9; opacity: 0.8; }
+        .top-left { top: 0; left: 0; border-bottom-right-radius: 8px; }
+        .top-right { top: 0; right: 0; border-bottom-left-radius: 8px; }
+
+        .summary-card h2 { margin: 0 0 15px 0; font-size: 2.2em; color: #0f172a; font-weight: 900; letter-spacing: 1px; }
+        .score-big { 
+            font-size: 4em; 
+            font-weight: 900; 
+            margin: 15px 0; 
+            background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* 統計數據橫幅 */
+        .stats-row { 
+            display: flex; 
+            justify-content: space-around; 
+            margin-top: 30px; 
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+        }
+        .stats-item strong { display: block; color: #64748b; font-size: 0.9em; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
+        .stats-item span { font-size: 1.5em; font-weight: bold; color: #0f172a; }
+        
+        /* 錯題檢討區塊 */
+        .wrong-section { margin-top: 30px; }
+        .wrong-section h3 { 
+            color: #0f172a; 
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            font-size: 1.5em;
+        }
+        .wrong-item { 
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #e2e8f0;
+            border-left: 6px solid #ef4444; /* 紅色警示邊框 */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            transition: transform 0.2s ease;
+        }
+        .wrong-item:hover { transform: translateX(5px); box-shadow: 0 6px 12px rgba(0,0,0,0.05); }
+        .wrong-question-text { font-weight: 900; font-size: 1.2em; margin-bottom: 15px; display: block; color: #1e293b; line-height: 1.5; }
+        
+        /* 正確答案標示框 */
+        .correct-answer-box { 
+            color: #065f46; 
+            background-color: #d1fae5; 
+            border: 1px solid #a7f3d0;
+            padding: 12px 18px; 
+            border-radius: 6px; 
+            display: inline-block;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        /* 滿分提示 */
+        .success-msg { 
+            text-align: center; 
+            color: #065f46; 
+            background: #d1fae5;
+            border: 1px solid #a7f3d0;
+            border-radius: 12px;
+            padding: 40px; 
+            margin-top: 20px;
+        }
+        .success-msg h3 { font-size: 2em; margin-top: 0; }
+
+        /* 按鈕區 */
+        .btn-group { margin-top: 50px; text-align: center; }
+        .btn { 
+            padding: 18px 40px; 
+            border-radius: 50px; 
+            text-decoration: none; 
+            font-weight: bold; 
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+            display: inline-block;
+            min-width: 250px;
+            letter-spacing: 1px;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-retry { 
+            background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+            color: white; 
+            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+        }
+        .btn-retry:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4); 
+            filter: brightness(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="summary-card">
+            <div class="corner top-left"></div>
+            <div class="corner top-right"></div>
+
+            <h2>TEST COMPLETE</h2>
+            <div class="score-big">{{ score }}</div>
+            <p style="color: #64748b; font-weight: bold; margin-top: -10px; font-size: 1.2em;">總分</p>
+            
+            <div class="stats-row">
+                <div class="stats-item">
+                    <strong>答對題數</strong>
+                    <span>{{ correct_count }} / {{ total }}</span>
+                </div>
+                <div class="stats-item">
+                    <strong>作答時間</strong>
+                    <span>{{ duration }} 秒</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="wrong-section">
+            {% if wrong_questions %}
+                <h3><i class="fa-solid fa-triangle-exclamation" style="color: #ef4444;"></i> 錯誤分析報告</h3>
+                {% for wq in wrong_questions %}
+                    <div class="wrong-item">
+                        <span class="wrong-question-text">Q: {{ wq.text }}</span>
+                        <div>
+                            <span class="correct-answer-box">
+                                ✅ 正確解答：
+                                {% for choice in wq.choices.all %}
+                                    {% if choice.is_correct %}{{ choice.text }}{% endif %}
+                                {% endfor %}
+                            </span>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="success-msg">
+                    <h3>SYSTEM MASTERED 💯</h3>
+                    <p style="font-size: 1.2em; margin-bottom: 0;">完美達成！您已完全掌握「雜湊表」單元的所有核心概念。</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="btn-group">
+            <a href="{% url 'home' %}" class="btn btn-retry">返回系統首頁</a>
+        </div>
+    </div>
+</body>
+</html>
