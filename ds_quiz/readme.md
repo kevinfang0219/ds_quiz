@@ -30,7 +30,7 @@
 
 ```bash
 
-git clone \[https://github.com/你的GitHub帳號/ds\_quiz.git](https://github.com/你的GitHub帳號/ds\_quiz.git)
+git clone https://github.com/kevinfang0219/ds_quiz.git
 
 cd ds\_quiz
 
