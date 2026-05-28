@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <title>資料結構測驗系統</title>
     <style>
-        /* 基礎設定：明亮乾淨的科技背景 */
         body { 
             font-family: "Microsoft JhengHei", "Segoe UI", sans-serif; 
             background-color: #f8fafc; 
-            /* 淡淡的藍色科技網格 */
             background-image: 
                 linear-gradient(rgba(14, 165, 233, 0.08) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(14, 165, 233, 0.08) 1px, transparent 1px);
@@ -22,41 +20,23 @@
             text-align: center; 
         }
 
-        /* 主視覺卡片：明亮玻璃質感 */
         .hero-card { 
             background: rgba(255, 255, 255, 0.95); 
             backdrop-filter: blur(10px); 
             padding: 50px; 
             border-radius: 12px; 
             border: 1px solid rgba(14, 165, 233, 0.2); 
-            border-top: 5px solid #0ea5e9; /* 頂部科技藍粗線條 */
+            border-top: 5px solid #0ea5e9; 
             box-shadow: 0 10px 40px rgba(14, 165, 233, 0.1); 
             max-width: 550px; 
             position: relative;
         }
 
-        /* 標題：俐落深色字體 */
-        h1 { 
-            font-size: 2.8em; 
-            margin-bottom: 15px; 
-            color: #0f172a;
-            font-weight: 900;
-            letter-spacing: 1px;
-        }
-        
-        /* 標題特別強調字（科技藍） */
+        h1 { font-size: 2.8em; margin-bottom: 15px; color: #0f172a; font-weight: 900; letter-spacing: 1px; }
         h1 span { color: #0ea5e9; }
-
-        /* 內文描述 */
-        p { 
-            font-size: 1.1em; 
-            margin-bottom: 40px; 
-            line-height: 1.8; 
-            color: #64748b;
-        }
+        p { font-size: 1.1em; margin-bottom: 30px; line-height: 1.8; color: #64748b; }
         p strong { color: #0ea5e9; font-weight: bold; }
 
-        /* 開始按鈕：現代感漸層藍 */
         .btn-start { 
             background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
             color: #ffffff; 
@@ -66,33 +46,38 @@
             font-weight: bold; 
             font-size: 1.2em; 
             letter-spacing: 1px;
-            text-decoration: none; 
+            cursor: pointer;
             transition: all 0.3s ease; 
             display: inline-block; 
             box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+            width: 100%;
         }
+        .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4); filter: brightness(1.1); }
 
-        /* 按鈕滑鼠滑過效果 */
-        .btn-start:hover { 
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4);
-            filter: brightness(1.1);
-        }
-
-        /* 底部裝飾與開發者資訊 */
-        .footer { 
-            margin-top: 35px; 
-            font-size: 0.85em; 
-            color: #94a3b8; 
-            border-top: 1px solid #e2e8f0;
-            padding-top: 15px;
-            letter-spacing: 1px;
-        }
-        
-        /* 點綴：藍色小方塊裝飾 */
+        .footer { margin-top: 35px; font-size: 0.85em; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 15px; letter-spacing: 1px; }
         .corner { position: absolute; width: 12px; height: 12px; background-color: #0ea5e9; opacity: 0.8; }
         .top-left { top: 0; left: 0; border-bottom-right-radius: 8px; }
         .top-right { top: 0; right: 0; border-bottom-left-radius: 8px; }
+
+        .options-group {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            text-align: left;
+            border: 1px solid #e2e8f0;
+        }
+        .options-group label {
+            display: block;
+            margin: 10px 0;
+            font-size: 1.1em;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .options-group input[type="radio"] {
+            transform: scale(1.2);
+            margin-right: 10px;
+        }
     </style>
 </head>
 <body>
@@ -104,10 +89,23 @@
         <p>
             歡迎進入資料結構測驗系統。<br>
             本次測驗模組鎖定：<strong>「雜湊表 (Hash Tables)」</strong><br>
-            題庫包含 15 題核心學理與應用測驗。
+            系統內建間隔學習法，曾答錯的題目將優先出現。
         </p>
         
-        <a href="{% url 'start_quiz' %}" class="btn-start">開始測驗</a>
+        <form method="POST" action="{% url 'start_quiz' %}">
+            {% csrf_token %}
+            <div class="options-group">
+                <div style="margin-bottom: 10px; color: #475569; font-size: 0.9em;">請選擇本次測驗題數：</div>
+                <label>
+                    <input type="radio" name="num_questions" value="5" checked> 5 題 (快速複習)
+                </label>
+                <label>
+                    <input type="radio" name="num_questions" value="10"> 10 題 (完整測驗)
+                </label>
+            </div>
+            
+            <button type="submit" class="btn-start">🚀 開始測驗</button>
+        </form>
         
         <div class="footer">
             DEVELOPER: KEVIN | 測驗系統就緒

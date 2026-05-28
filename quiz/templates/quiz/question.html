@@ -123,7 +123,7 @@
         <form method="POST">
             {% csrf_token %}
             
-            {% for choice in question.choices.all %}
+            {% for choice in choices %}
                 <div class="choice-item 
                     {% if show_feedback %}
                         {% if choice.is_correct %} correct {% elif choice.id == selected_choice_id %} wrong {% endif %}
