@@ -118,6 +118,13 @@
         <div class="corner top-right"></div>
 
         <div class="progress">測驗進度： {{ q_index }} / {{ total_questions }}</div>
+        
+        <div style="margin-bottom: 12px;">
+            <span style="background-color: #f59e0b; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85em; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                🔥 難度：{{ question.difficulty }}
+            </span>
+        </div>
+        
         <div class="question-text">{{ question.text }}</div>
 
         <form method="POST">
