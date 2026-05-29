@@ -120,9 +120,19 @@
         <div class="progress">測驗進度： {{ q_index }} / {{ total_questions }}</div>
         
         <div style="margin-bottom: 12px;">
-            <span style="background-color: #f59e0b; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85em; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                🔥 難度：{{ question.difficulty }}
-            </span>
+            {% if question.difficulty == '易' %}
+                <span style="background-color: #10b981; color: white; padding: 4px 14px; border-radius: 20px; font-size: 0.85em; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    易
+                </span>
+            {% elif question.difficulty == '中' %}
+                <span style="background-color: #f59e0b; color: white; padding: 4px 14px; border-radius: 20px; font-size: 0.85em; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    中
+                </span>
+            {% elif question.difficulty == '難' %}
+                <span style="background-color: #ef4444; color: white; padding: 4px 14px; border-radius: 20px; font-size: 0.85em; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    難
+                </span>
+            {% endif %}
         </div>
         
         <div class="question-text">{{ question.text }}</div>
