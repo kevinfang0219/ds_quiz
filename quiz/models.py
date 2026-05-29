@@ -1,10 +1,19 @@
 from django.db import models
 
 class Question(models.Model):
+    # 定義難易度選項
+    DIFFICULTY_CHOICES = [
+        ('易', '易 (Easy)'),
+        ('中', '中 (Medium)'),
+        ('難', '難 (Hard)'),
+    ]
+    
     text = models.CharField("題目內容", max_length=500)
+    # 新增這行難易度欄位，預設為「中」
+    difficulty = models.CharField("難易度", max_length=1, choices=DIFFICULTY_CHOICES, default='中')
     
     def __str__(self):
-        return self.text
+        return f"[{self.difficulty}] {self.text}" # 順便讓後台標題顯示難易度，會比較好管理！
 
 class Choice(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='choices', verbose_name="所屬題目")
