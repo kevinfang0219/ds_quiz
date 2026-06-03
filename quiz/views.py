@@ -56,12 +56,32 @@ def take_quiz(request, q_index):
     current_q_id = question_ids[q_index]
     question = Question.objects.get(id=current_q_id)
     
-    # 選項隨機打亂邏輯：綁定 session key 與題號，確保送出表單後選項不會亂跳
-    choices = list(question.choices.all())
+    # === 選項隨機打亂與墊底防呆機制 ===
+    all_choices = list(question.choices.all())
+    normal_choices = []
+    last_choices = []
+    
+    # 定義哪些關鍵字必須排在最後面（可自由擴充）
+    fixed_keywords = ["以上皆是", "以上皆非", "以上皆對", "皆非"]
+    
+    # 將選項分流
+    for choice in all_choices:
+        if any(keyword in choice.text for keyword in fixed_keywords):
+            last_choices.append(choice)
+        else:
+            normal_choices.append(choice)
+    
+    # 綁定 session key 與題號，確保送出表單後選項不會亂跳
     session_key = request.session.session_key or 'default_key'
     random.seed(f"{session_key}_{question.id}")
-    random.shuffle(choices)
+    
+    # 只有普通選項參與洗牌
+    random.shuffle(normal_choices)
     random.seed() # 重置隨機狀態
+    
+    # 組合最後的選項 (普通選項洗牌後 + 墊底選項)
+    final_choices = normal_choices + last_choices
+    # =================================
     
     selected_choice_id = None
     show_feedback = False
@@ -83,7 +103,7 @@ def take_quiz(request, q_index):
 
     return render(request, 'quiz/question.html', {
         'question': question,
-        'choices': choices,  # 將打亂後的選項傳給前端
+        'choices': final_choices,  # 將組合好的最終選項傳給前端
         'q_index': q_index + 1,
         'total_questions': total_questions,
         'error_message': error_message,
