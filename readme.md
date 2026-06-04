@@ -21,7 +21,7 @@ cd ds_quiz
 
 **2. 建立並啟動虛擬環境**
 ```bash
-python -m venv myenv
+py -m venv myenv
 
 💡 提示：遇到 python was not found 怎麼辦？
 若終端機跳出找不到 Python 的錯誤，請直接在終端機輸入 winget install Python.Python.3.12 進行一鍵安裝。安裝完成後，請務必關閉當前的 CMD 視窗並重新開啟一個新的，接著重新執行上述建立環境的指令即可。
@@ -41,7 +41,7 @@ pip install -r requirements.txt
 
 **4. 啟動伺服器**
 ```bash
-python manage.py runserver
+py manage.py runserver
 ```
 
 **5. 開始使用**
