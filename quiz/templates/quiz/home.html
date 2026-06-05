@@ -23,81 +23,123 @@
         .hero-card { 
             background: rgba(255, 255, 255, 0.95); 
             backdrop-filter: blur(10px); 
-            padding: 50px; 
+            padding: 35px 45px; /* 稍微縮小卡片內距 */
             border-radius: 12px; 
             border: 1px solid rgba(14, 165, 233, 0.2); 
             border-top: 5px solid #0ea5e9; 
             box-shadow: 0 10px 40px rgba(14, 165, 233, 0.1); 
             max-width: 550px; 
+            width: 100%;
             position: relative;
+            box-sizing: border-box;
         }
 
-        h1 { font-size: 2.8em; margin-bottom: 15px; color: #0f172a; font-weight: 900; letter-spacing: 1px; }
+        h1 { font-size: 2.5em; margin-top: 0; margin-bottom: 10px; color: #0f172a; font-weight: 900; letter-spacing: 1px; }
         h1 span { color: #0ea5e9; }
-        p { font-size: 1.1em; margin-bottom: 30px; line-height: 1.8; color: #64748b; }
+        p { font-size: 1.05em; margin-bottom: 20px; line-height: 1.6; color: #64748b; }
         p strong { color: #0ea5e9; font-weight: bold; }
 
         .btn-start { 
             background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
             color: #ffffff; 
-            padding: 15px 50px; 
+            padding: 12px 0; 
             border: none;
             border-radius: 8px; 
             font-weight: bold; 
-            font-size: 1.2em; 
+            font-size: 1.15em; 
             letter-spacing: 1px;
             cursor: pointer;
             transition: all 0.3s ease; 
-            display: inline-block; 
-            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
             width: 100%;
+            box-sizing: border-box;
         }
         .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4); filter: brightness(1.1); }
 
         .btn-leaderboard {
             background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
             color: #ffffff;
-            padding: 15px 50px;
+            padding: 12px 0;
             border: none;
             border-radius: 8px;
             font-weight: bold;
-            font-size: 1.2em;
+            font-size: 1.15em;
             letter-spacing: 1px;
             cursor: pointer;
             transition: all 0.3s ease;
-            display: inline-block;
-            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
             width: 100%;
-            margin-top: 15px;
             text-decoration: none;
             box-sizing: border-box;
+            display: inline-block;
         }
         .btn-leaderboard:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(251, 191, 36, 0.4); filter: brightness(1.1); }
+        
+        /* 雙按鈕並列的 Flex 容器 */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
 
-        .footer { margin-top: 35px; font-size: 0.85em; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 15px; letter-spacing: 1px; }
+        /* 登入輸入框樣式 */
+        .login-input {
+            width: 100%;
+            padding: 10px 15px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1em;
+            font-family: inherit;
+            background-color: #f8fafc;
+            transition: border-color 0.3s;
+        }
+        .login-input:focus { outline: none; border-color: #0ea5e9; background-color: #ffffff; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15); }
+        .btn-login { background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+        .btn-login:hover { box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4); }
+
+        /* 個人作答紀錄區塊樣式 (微調間距) */
+        .history-section {
+            background: #f1f5f9;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: left;
+            border: 1px solid #e2e8f0;
+        }
+        .history-title { font-weight: bold; color: #334155; margin-bottom: 8px; font-size: 0.95em; border-bottom: 2px solid #cbd5e1; padding-bottom: 6px; }
+        .history-link { text-decoration: none; color: inherit; display: block; }
+        .history-item { font-size: 0.85em; color: #475569; padding: 8px 10px; border-bottom: 1px dashed #cbd5e1; display: flex; justify-content: space-between; transition: all 0.2s ease; }
+        .history-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .history-link:hover .history-item { background-color: #e2e8f0; border-radius: 6px; transform: translateX(5px); }
+        .history-score { font-weight: bold; color: #10b981; font-size: 1.1em;}
+
+        .footer { margin-top: 25px; font-size: 0.8em; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 10px; letter-spacing: 1px; }
         .corner { position: absolute; width: 12px; height: 12px; background-color: #0ea5e9; opacity: 0.8; }
         .top-left { top: 0; left: 0; border-bottom-right-radius: 8px; }
         .top-right { top: 0; right: 0; border-bottom-left-radius: 8px; }
 
+        /* 選項群組改為橫向排列 */
         .options-group {
             background: #f1f5f9;
-            padding: 15px;
+            padding: 10px 15px;
             border-radius: 8px;
-            margin-bottom: 25px;
-            text-align: left;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             border: 1px solid #e2e8f0;
         }
         .options-group label {
-            display: block;
-            margin: 10px 0;
-            font-size: 1.1em;
+            margin: 0 5px;
+            font-size: 1em;
             cursor: pointer;
             font-weight: bold;
+            color: #334155;
+            display: flex;
+            align-items: center;
         }
-        .options-group input[type="radio"] {
-            transform: scale(1.2);
-            margin-right: 10px;
-        }
+        .options-group input[type="radio"] { transform: scale(1.1); margin-right: 5px; }
     </style>
 </head>
 <body>
@@ -111,23 +153,84 @@
             本次測驗模組鎖定：<strong>「雜湊表 (Hash Tables)」</strong><br>
             系統內建間隔學習法，曾答錯的題目將優先出現。
         </p>
-        
-        <form method="POST" action="{% url 'start_quiz' %}">
-            {% csrf_token %}
-            <div class="options-group">
-                <div style="margin-bottom: 10px; color: #475569; font-size: 0.9em;">請選擇本次測驗題數：</div>
-                <label>
-                    <input type="radio" name="num_questions" value="5" checked> 5 題 (快速複習)
-                </label>
-                <label>
-                    <input type="radio" name="num_questions" value="10"> 10 題 (完整測驗)
-                </label>
-            </div>
-            
-            <button type="submit" class="btn-start">🚀 開始測驗</button>
-        </form>
 
-        <a href="{% url 'leaderboard' %}" class="btn-leaderboard">🏆 查看排行榜</a>
+        {% if user.is_authenticated %}
+            <div style="margin-bottom: 15px; color: #0ea5e9; font-weight: bold; font-size: 1.05em;">
+                👋 歡迎回來，{{ user.username }}！準備好挑戰了嗎？
+            </div>
+
+            <form method="POST" action="{% url 'start_quiz' %}">
+                {% csrf_token %}
+                
+                <div class="options-group">
+                    <div style="color: #475569; font-size: 0.9em; font-weight: bold;">🎯 選擇題數：</div>
+                    <div style="display: flex;">
+                        <label><input type="radio" name="num_questions" value="5" checked> 5 題</label>
+                        <label style="margin-left: 15px;"><input type="radio" name="num_questions" value="10"> 10 題</label>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button type="submit" class="btn-start">🚀 開始測驗</button>
+                    <a href="{% url 'leaderboard' %}" class="btn-leaderboard">🏆 查看排行榜</a>
+                </div>
+            </form>
+
+            <div class="history-section">
+                <div class="history-title">📊 您最近的測驗紀錄</div>
+                {% if user_records %}
+                    {% for record in user_records %}
+                    <a href="{% url 'record_detail' record.id %}" class="history-link">
+                        <div class="history-item">
+                            <span>📅 {{ record.created_at|date:"Y/m/d H:i" }}</span>
+                            <span>
+                                <span class="history-score">{{ record.score }} 分</span> ({{ record.duration_seconds }}秒) 
+                                <span style="font-size: 0.85em; color: #0ea5e9; margin-left: 5px;">🔍檢討</span>
+                            </span>
+                        </div>
+                    </a>
+                    {% endfor %}
+                {% else %}
+                    <div class="history-item" style="justify-content: center; color: #94a3b8; border: none; padding-bottom: 8px;">
+                        尚未有作答紀錄，趕快開始第一次測驗吧！
+                    </div>
+                {% endif %}
+            </div>
+
+            <div style="margin-top: 15px;">
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" style="background: none; border: none; color: #94a3b8; font-size: 0.85em; text-decoration: none; border-bottom: 1px solid #cbd5e1; padding-bottom: 2px; cursor: pointer;">登出切換帳號</button>
+                </form>
+            </div>
+
+        {% else %}
+            {% if error_message %}
+                <div style="color: #ef4444; background: #fef2f2; border: 1px solid #fecaca; padding: 8px; border-radius: 8px; margin-bottom: 15px; font-weight: bold; font-size: 0.9em;">
+                    ⚠️ {{ error_message }}
+                </div>
+            {% endif %}
+
+            <form method="POST" action="{% url 'home' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="login">
+                
+                <div style="text-align: left;">
+                    <label style="font-weight: bold; color: #475569; font-size: 0.9em;">帳號 (Username)</label>
+                    <input type="text" name="username" class="login-input" required autocomplete="username">
+
+                    <label style="font-weight: bold; color: #475569; font-size: 0.9em;">密碼 (Password)</label>
+                    <input type="password" name="password" class="login-input" required autocomplete="current-password">
+                </div>
+                
+                <button type="submit" class="btn-start btn-login">🔐 登入系統</button>
+            </form>
+
+            <div style="margin-top: 15px;">
+                <span style="color: #64748b; font-size: 0.9em;">還沒有專屬帳號？ </span>
+                <a href="{% url 'register' %}" style="color: #0ea5e9; font-weight: bold; text-decoration: none; font-size: 0.9em;">點此快速註冊</a>
+            </div>
+        {% endif %}
         
         <div class="footer">
             DEVELOPER: KEVIN | 測驗系統就緒

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>測驗檢討 - 資料結構測驗系統</title>
+    <style>
+        body { 
+            font-family: "Microsoft JhengHei", "Segoe UI", sans-serif; 
+            background-color: #f8fafc; 
+            padding: 40px 20px; 
+            margin: 0; 
+            display: flex; 
+            justify-content: center; 
+            color: #334155; 
+        }
+        .detail-card { 
+            background: #ffffff; 
+            padding: 40px; 
+            border-radius: 12px; 
+            border-top: 5px solid #0ea5e9; 
+            box-shadow: 0 10px 40px rgba(14, 165, 233, 0.1); 
+            max-width: 650px; 
+            width: 100%;
+        }
+        h2 { color: #0f172a; margin-top: 0; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        .meta-info { background: #f1f5f9; padding: 15px; border-radius: 8px; margin-bottom: 30px; font-weight: bold; color: #475569; display: flex; justify-content: space-between;}
+        
+        .wrong-q-box { background: #fef2f2; border: 1px solid #fecaca; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: left; }
+        .q-text { font-weight: bold; color: #334155; margin-top: 0; font-size: 1.1em; line-height: 1.5; }
+        .correct-ans { color: #10b981; font-weight: bold; margin-bottom: 0; background: #ecfdf5; padding: 10px; border-radius: 5px; display: inline-block; }
+        
+        .perfect-box { background: #ecfdf5; border: 1px solid #a7f3d0; padding: 20px; border-radius: 8px; color: #059669; font-weight: bold; text-align: center; margin-bottom: 30px; font-size: 1.1em; }
+        
+        .btn-back { 
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+            color: #ffffff; padding: 12px 30px; border: none; border-radius: 8px; font-weight: bold; text-decoration: none; display: inline-block; transition: all 0.2s; 
+        }
+        .btn-back:hover { box-shadow: 0 4px 15px rgba(100, 116, 139, 0.3); transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+    <div class="detail-card">
+        <h2>📝 測驗紀錄檢討</h2>
+        
+        <div class="meta-info">
+            <span>📅 {{ record.created_at|date:"Y/m/d H:i" }}</span>
+            <span style="color: #10b981;">🏆 總分：{{ record.score }} 分</span>
+            <span>⏱️ 耗時：{{ record.duration_seconds }} 秒</span>
+        </div>
+
+        {% if wrong_details %}
+            <h3 style="color: #ef4444; margin-bottom: 15px;">❌ 當時答錯的題目：</h3>
+            {% for detail in wrong_details %}
+                <div class="wrong-q-box">
+                    <p class="q-text">Q: {{ detail.question.text }}</p>
+                    <p class="correct-ans">✅ 正確解答：{{ detail.correct_choice.text }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="perfect-box">
+                🎉 太厲害了！您在這此測驗中獲得了滿分，沒有留下任何錯題！
+            </div>
+        {% endif %}
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{% url 'home' %}" class="btn-back">返回首頁</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,8 +1,8 @@
 import random
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login
 from .models import Question, Choice, QuizRecord
 
@@ -17,9 +17,27 @@ def register(request):
         form = UserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
 
-@login_required
 def home(request):
-    return render(request, 'quiz/home.html')
+    error_message = None
+    # 處理在首頁卡片直接登入的邏輯
+    if request.method == 'POST' and request.POST.get('action') == 'login':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('home')
+        else:
+            error_message = "帳號或密碼錯誤，請重新確認。"
+            
+    # 如果使用者已登入，就去資料庫撈取他「最近 3 次」的作答紀錄 (這裡從 [:5] 改成了 [:3])
+    user_records = []
+    if request.user.is_authenticated:
+        user_records = QuizRecord.objects.filter(user=request.user).order_by('-created_at')[:3]
+
+    return render(request, 'quiz/home.html', {
+        'error_message': error_message,
+        'user_records': user_records
+    })
 
 @login_required
 def start_quiz(request):
@@ -174,4 +192,25 @@ def leaderboard(request):
     top_records = QuizRecord.objects.exclude(user__isnull=True).order_by('-score', 'duration_seconds')[:10]
     return render(request, 'quiz/leaderboard.html', {
         'top_records': top_records
+    })
+
+@login_required
+def record_detail(request, record_id):
+    # 透過 ID 抓取紀錄，並加上 user=request.user 確保只能看「自己的」紀錄
+    record = get_object_or_404(QuizRecord, id=record_id, user=request.user)
+    
+    # 撈出這筆紀錄中答錯的所有題目
+    wrong_questions = record.wrong_questions.all()
+    
+    wrong_details = []
+    for q in wrong_questions:
+        correct_choice = q.choices.filter(is_correct=True).first()
+        wrong_details.append({
+            'question': q,
+            'correct_choice': correct_choice
+        })
+        
+    return render(request, 'quiz/record_detail.html', {
+        'record': record,
+        'wrong_details': wrong_details
     })
