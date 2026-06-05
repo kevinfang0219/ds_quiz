@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>註冊新帳號</title>
+    <style>
+        /* 新增的 CSS 樣式，用來對齊表單 */
+        .form-container {
+            display: inline-block;
+            text-align: left; /* 讓表單內的文字靠左，方便對齊 */
+            margin: 0 auto;
+        }
+        
+        .form-container p {
+            margin-bottom: 15px;
+        }
+
+        .form-container label {
+            display: inline-block;
+            width: 100px; /* 固定所有標題的寬度 */
+            text-align: right; /* 標題文字靠右，貼齊輸入框 */
+            margin-right: 10px;
+            vertical-align: top;
+            font-weight: bold;
+        }
+
+        .form-container input {
+            padding: 5px;
+            width: 250px;
+            box-sizing: border-box;
+        }
+
+        /* 針對 Django 自動產生的密碼規則提示進行微調 */
+        .form-container span.helptext, 
+        .form-container ul {
+            display: block;
+            margin-left: 115px; /* 剛好對齊輸入框 (100px + 15px) */
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+            margin-bottom: 0;
+            padding-left: 0;
+        }
+        
+        .form-container ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body style="text-align: center; font-family: sans-serif; padding-top: 50px;">
+
+    <h2>建立您的學習帳號</h2>
+    <p>註冊後即可開始進行測驗，系統會自動記錄您的錯題本！</p>
+
+    <div class="form-container">
+        <form method="post" action="{% url 'register' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button type="submit" style="padding: 10px 20px; background-color: #10b981; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">
+                    完成註冊並登入
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <br><br>
+    <a href="{% url 'login' %}" style="color: #3b82f6; text-decoration: none;">已經有帳號了？返回登入頁面</a>
+
+</body>
+</html>

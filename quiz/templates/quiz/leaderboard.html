@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>英雄榜 - 測驗系統</title>
+    <style>
+        body { text-align: center; font-family: sans-serif; padding-top: 50px; background-color: #f8fafc; }
+        .leaderboard-container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: center; border-bottom: 1px solid #e2e8f0; }
+        th { background-color: #3b82f6; color: white; }
+        tr:hover { background-color: #f1f5f9; }
+        .rank-1 { font-weight: bold; color: #fbbf24; font-size: 1.2em; } /* 金牌 */
+        .rank-2 { font-weight: bold; color: #94a3b8; font-size: 1.1em; } /* 銀牌 */
+        .rank-3 { font-weight: bold; color: #b45309; font-size: 1.1em; } /* 銅牌 */
+        .btn-back { display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #64748b; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="leaderboard-container">
+        <h2 style="color: #1e293b;">🏆 測驗英雄榜 🏆</h2>
+        <p>比拼分數與作答速度，看看誰是資料結構大師！</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>名次</th>
+                    <th>挑戰者</th>
+                    <th>分數</th>
+                    <th>作答時間</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in top_records %}
+                <tr>
+                    <td class="{% if forloop.counter == 1 %}rank-1{% elif forloop.counter == 2 %}rank-2{% elif forloop.counter == 3 %}rank-3{% endif %}">
+                        {% if forloop.counter == 1 %}🥇
+                        {% elif forloop.counter == 2 %}🥈
+                        {% elif forloop.counter == 3 %}🥉
+                        {% else %}{{ forloop.counter }}
+                        {% endif %}
+                    </td>
+                    <td><strong>{{ record.user.username }}</strong></td>
+                    <td style="color: #10b981; font-weight: bold;">{{ record.score }} 分</td>
+                    <td>{{ record.duration_seconds }} 秒</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="color: #64748b; padding: 20px;">目前還沒有人完成測驗，快來搶下首殺！</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{% url 'home' %}" class="btn-back">返回首頁</a>
+    </div>
+
+</body>
+</html>

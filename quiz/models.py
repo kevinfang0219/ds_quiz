@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Question(models.Model):
     # 定義難易度選項
@@ -24,7 +25,9 @@ class Choice(models.Model):
         return self.text
 
 class QuizRecord(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     duration_seconds = models.IntegerField("作答時間(秒)")
+    score = models.IntegerField("分數", default=0)
     wrong_questions = models.ManyToManyField(Question, blank=True, verbose_name="答錯的題目")
     created_at = models.DateTimeField("測驗時間", auto_now_add=True)
 

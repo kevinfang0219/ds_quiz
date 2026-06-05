@@ -1,13 +1,28 @@
 import random
 from django.shortcuts import render, redirect
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
 from .models import Question, Choice, QuizRecord
 
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('home')
+    else:
+        form = UserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})
+
+@login_required
 def home(request):
     return render(request, 'quiz/home.html')
 
+@login_required
 def start_quiz(request):
-    # 接收首頁傳來的題數設定 (預設 5 題)
     num_questions = 5
     if request.method == 'POST':
         num_questions = int(request.POST.get('num_questions', 5))
@@ -15,37 +30,29 @@ def start_quiz(request):
     request.session['answers'] = {}
     request.session['start_time'] = timezone.now().timestamp()
     
-    # 讀取使用者的「歷史錯題本」
     wrong_history = request.session.get('wrong_history', [])
-    
-    # 取得所有題目的 ID
     all_ids = list(Question.objects.exclude(id=69).values_list('id', flat=True))
     
-    # 篩選出有效的歷史錯題
     valid_wrong_ids = [qid for qid in wrong_history if qid in all_ids]
     random.shuffle(valid_wrong_ids)
     
     selected_ids = []
     
-    # 優先把錯題塞進這次的考卷中
     for qid in valid_wrong_ids:
         if len(selected_ids) < num_questions:
             selected_ids.append(qid)
             
-    # 如果錯題不夠，剩下的用隨機題目補滿
     remaining_ids = [qid for qid in all_ids if qid not in selected_ids]
     random.shuffle(remaining_ids)
     
     needed = num_questions - len(selected_ids)
     selected_ids.extend(remaining_ids[:needed])
-    
-    # 再次打亂，讓學生不會一開始就猜到前面都是錯題
     random.shuffle(selected_ids)
     
     request.session['question_ids'] = selected_ids
-
     return redirect('take_quiz', q_index=0)
 
+@login_required
 def take_quiz(request, q_index):
     question_ids = request.session.get('question_ids', [])
     total_questions = len(question_ids)
@@ -56,32 +63,24 @@ def take_quiz(request, q_index):
     current_q_id = question_ids[q_index]
     question = Question.objects.get(id=current_q_id)
     
-    # === 選項隨機打亂與墊底防呆機制 ===
     all_choices = list(question.choices.all())
     normal_choices = []
     last_choices = []
     
-    # 定義哪些關鍵字必須排在最後面（可自由擴充）
     fixed_keywords = ["以上皆是", "以上皆非", "以上皆對", "皆非"]
     
-    # 將選項分流
     for choice in all_choices:
         if any(keyword in choice.text for keyword in fixed_keywords):
             last_choices.append(choice)
         else:
             normal_choices.append(choice)
     
-    # 綁定 session key 與題號，確保送出表單後選項不會亂跳
     session_key = request.session.session_key or 'default_key'
     random.seed(f"{session_key}_{question.id}")
-    
-    # 只有普通選項參與洗牌
     random.shuffle(normal_choices)
-    random.seed() # 重置隨機狀態
+    random.seed()
     
-    # 組合最後的選項 (普通選項洗牌後 + 墊底選項)
     final_choices = normal_choices + last_choices
-    # =================================
     
     selected_choice_id = None
     show_feedback = False
@@ -103,7 +102,7 @@ def take_quiz(request, q_index):
 
     return render(request, 'quiz/question.html', {
         'question': question,
-        'choices': final_choices,  # 將組合好的最終選項傳給前端
+        'choices': final_choices,
         'q_index': q_index + 1,
         'total_questions': total_questions,
         'error_message': error_message,
@@ -111,6 +110,7 @@ def take_quiz(request, q_index):
         'selected_choice_id': selected_choice_id,
     })
 
+@login_required
 def quiz_result(request):
     answers = request.session.get('answers', {})
     start_time = request.session.get('start_time')
@@ -121,6 +121,7 @@ def quiz_result(request):
         duration = int(timezone.now().timestamp() - start_time)
 
     wrong_questions_list = []
+    wrong_details = []
     wrong_ids = []
     score = 0
 
@@ -133,28 +134,44 @@ def quiz_result(request):
         else:
             wrong_questions_list.append(question)
             wrong_ids.append(question.id)
+            
+            correct_choice = question.choices.filter(is_correct=True).first()
+            wrong_details.append({
+                'question': question,
+                'user_choice': selected_choice,
+                'correct_choice': correct_choice
+            })
 
-    # 錯題本 (間隔學習) 更新邏輯
     current_wrong = request.session.get('wrong_history', [])
-    # 1. 這次答錯的，加進錯題本
     for wid in wrong_ids:
         if wid not in current_wrong:
             current_wrong.append(wid)
-    # 2. 這次答對的，從錯題本裡移除（代表學會了）
     correct_ids = [int(qid) for qid in answers.keys() if int(qid) not in wrong_ids]
     current_wrong = [wid for wid in current_wrong if wid not in correct_ids]
     request.session['wrong_history'] = current_wrong
 
-    record = QuizRecord.objects.create(duration_seconds=duration)
-    record.wrong_questions.set(wrong_questions_list)
-
     total = len(question_ids)
     final_score = int((score / total) * 100) if total > 0 else 0
+
+    try:
+        record = QuizRecord.objects.create(user=request.user, duration_seconds=duration, score=final_score)
+    except TypeError:
+        record = QuizRecord.objects.create(duration_seconds=duration, score=final_score)
+        
+    record.wrong_questions.set(wrong_questions_list)
 
     return render(request, 'quiz/result.html', {
         'score': final_score,
         'duration': duration,
         'wrong_questions': wrong_questions_list,
+        'wrong_details': wrong_details,
         'total': total,
         'correct_count': score
+    })
+
+@login_required
+def leaderboard(request):
+    top_records = QuizRecord.objects.exclude(user__isnull=True).order_by('-score', 'duration_seconds')[:10]
+    return render(request, 'quiz/leaderboard.html', {
+        'top_records': top_records
     })
